@@ -10,4 +10,4 @@ install:
 
 script:
     - composer test
-    - node test
+    - npm test
