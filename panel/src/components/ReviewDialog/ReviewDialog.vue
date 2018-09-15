@@ -87,21 +87,26 @@
             },
 
             async submit() {
+                let response;
+                let route;
+
                 try {
-                    let response = await Api.createPage(this.url, this.data.form.data);
+                    response = await Api.createPage(this.url, this.data.form.data);
+                    route = this.$api.pages.link(response.pageData.id);
                 } catch(error) {
                     this.$refs.dialog.error(error.message);
                     return;
                 }
 
-                this.$store.dispatch('notification/success', 'Page created!');
                 this.$emit('success');
                 this.$refs.dialog.close();
+                this.$store.dispatch("notification/success", this.$t('page.created'));
+                this.$router.push(route);
             },
 
             cancel() {
-                this.$emit('cancel');
                 this.$refs.dialog.close();
+                this.$emit('cancel');
             },
 
             async fetchFormData() {
