@@ -1,0 +1,8 @@
+vendor/
+node_modules/
+
+# Currently, Kirby only supports a single JavaScript
+# file in the plugin root. `/index.js` is the compiled
+# bundle that contains all necessary components.
+/index.js
+/index.js.map

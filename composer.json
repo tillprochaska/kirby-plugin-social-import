@@ -1,0 +1,38 @@
+{
+    "name": "tillprochaska/kirby-plugin-social-import",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "beta",
+    "authors": [
+        {
+            "name": "Till Prochaska",
+            "email": "mail@tillprochaska.de"
+        }
+    ],
+    "scripts": {
+        "test": "vendor/bin/phpunit --testdox --colors=always --bootstrap backend/test/support/bootstrap.php backend/test/unit"
+    },
+    "autoload": {
+        "files": ["config.php"],
+        "psr-4": {
+            "TillProchaska\\SocialImport\\": "backend/src"
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/k-next/kirby"
+        },
+        {
+          "type": "vcs",
+          "url": "https://github.com/tillprochaska/kirby-plugin-api-helpers"
+        }
+    ],
+    "require": {
+        "getkirby/cms": "dev-master",
+        "tillprochaska/kirby-plugin-api-helpers": "dev-develop"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.3"
+    }
+}
