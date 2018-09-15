@@ -46,7 +46,7 @@ class Controller {
         return [
             'url'  => $importable->getUrl(),
             'id'   => $importable->getId(),
-            'page' => $importable->createPage($template, $parent, $data),
+            'pageData' => $importable->createPage($template, $parent, $data),
         ];
     }
 
