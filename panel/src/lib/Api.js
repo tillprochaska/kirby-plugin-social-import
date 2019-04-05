@@ -1,4 +1,4 @@
-const BASE_URL = '/panel/plugin/tillprochaska/social-import/api';
+const BASE_URL = '/plugin/tillprochaska/social-import';
 
 export default class { 
 

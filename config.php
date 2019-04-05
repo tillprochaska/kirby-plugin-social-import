@@ -11,7 +11,7 @@ Importable::$services = [
     ],
 ];
 
-$baseUrl = '/panel/plugin/' . $plugin . '/api/';
+$baseUrl = '/plugin/' . $plugin;
 $api = new \TillProchaska\ApiHelpers\Api($baseUrl);
 
 $api->get(
