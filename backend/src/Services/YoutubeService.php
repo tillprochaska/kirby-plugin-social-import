@@ -24,7 +24,8 @@ class YoutubeService implements IService {
     }
 
     public function getIdFromUrl(string $url): string {
-        $pattern = '/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9-_]+)/';
+        $pattern = '/(?:youtube\.com\/watch\?.*v=|youtu\.be\/)([a-zA-Z0-9-_]+)/';
+
 
         if(!preg_match($pattern, $url, $match)) {
             throw new Exception('Could not extract video ID from the given URL.');
