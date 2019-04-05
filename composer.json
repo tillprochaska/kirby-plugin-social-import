@@ -20,16 +20,12 @@
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/k-next/kirby"
-        },
-        {
           "type": "vcs",
           "url": "https://github.com/tillprochaska/kirby-plugin-api-helpers"
         }
     ],
     "require": {
-        "getkirby/cms": "dev-master",
+        "getkirby/cms": "^3.0",
         "tillprochaska/kirby-plugin-api-helpers": "dev-develop"
     },
     "require-dev": {
