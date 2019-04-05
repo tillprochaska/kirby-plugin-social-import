@@ -11,13 +11,12 @@
             v-model="data.form.data"
             @submit="submit()"
         />
-        <footer class="k-dialog-footer" slot="footer">
-            <ReviewDialogActions
-                :status="data ? data.form.status : {}"
-                @cancel="cancel()"
-                @submit="submit()"
-            />
-        </footer>
+        <ReviewDialogActions
+            slot="footer"
+            :status="data ? data.form.status : {}"
+            @cancel="cancel()"
+            @submit="submit()"
+        />
     </k-dialog>
 </template>
 
@@ -56,13 +55,13 @@
 
                 let mandatoryFields = {
                     title: {
-                        label: this.$t('page.title'),
+                        label: this.$t('title'),
                         type: 'text',
                         required: true,
                         icon: 'title',
                     },
                     slug: {
-                        label: this.$t('page.slug'),
+                        label: this.$t('slug'),
                         type: 'text',
                         required: true,
                         counter: false,
