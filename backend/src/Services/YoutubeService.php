@@ -73,15 +73,17 @@ class YoutubeService implements IService {
         } 
 
         $item = $data->items[0];
+        $thumbnails = $item->snippet->thumbnails;
+        $thumbnail = $thumbnails->maxres ?? $thumbnails->high ?? $thumbnails->default;
 
         return [
             'id' => $item->id,
             'title' => $item->snippet->title,
             'datePublished' => $item->snippet->publishedAt,
             'channel' => $item->snippet->channelTitle,
-            'tags' => $item->snippet->tags,
+            'tags' => $item->snippet->tags ?? null,
             'description' => $item->snippet->description,
-            'thumbnail' => $item->snippet->thumbnails->maxres->url,
+            'thumbnail' => $thumbnail->url,
 
             'uploadStatus' => $item->status->uploadStatus,
             'privacyStatus' => $item->status->privacyStatus,
