@@ -9,6 +9,7 @@ use \TillProchaska\SocialImport\IService;
 class YoutubeService implements IService {
 
     protected static $baseUrl = 'https://www.googleapis.com/youtube/v3/videos';
+    protected static $urlPattern = '/(?:youtube\.com\/watch\?.*v=|youtu\.be\/)([a-zA-Z0-9-_]+)/';
     protected $apiKey;
 
     public function __construct() {
@@ -23,11 +24,12 @@ class YoutubeService implements IService {
         return 'youtube';
     }
 
+    public static function testUrl(string $url): bool {
+        return !!preg_match(self::$urlPattern, $url);
+    }
+
     public function getIdFromUrl(string $url): string {
-        $pattern = '/(?:youtube\.com\/watch\?.*v=|youtu\.be\/)([a-zA-Z0-9-_]+)/';
-
-
-        if(!preg_match($pattern, $url, $match)) {
+        if(!preg_match(self::$urlPattern, $url, $match)) {
             throw new Exception('Could not extract video ID from the given URL.');
         }
 

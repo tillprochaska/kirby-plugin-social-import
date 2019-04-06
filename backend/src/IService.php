@@ -5,14 +5,22 @@ namespace TillProchaska\SocialImport;
 interface IService {
 
     /**
-     * Retruns a unique identifier for the service
+     * Retruns the service’s unique name.
      */
     public static function getName(): string;
 
     /**
+     * Tests wether the service can be used with a given
+     * URL. Returns `true` if the service can be used to
+     * fetch data for the URL. Otherwise returns `false`.
+     */
+    public static function testUrl(string $url): bool;
+
+    /**
      * Extracts a unique id for the service for a given
      * URL. Throws an error if the URL can’t be used with
-     * the service.
+     * the service. Used to detect the service for a given
+     * URL as well as to fetch data.
      */
     public function getIdFromUrl(string $url): string;
 

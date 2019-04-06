@@ -120,16 +120,18 @@ class Importable {
     }
 
     protected function initializeService() {
+        $service = $this->detectService();
+        $this->service = new $service();
+    }
+
+    protected function detectService() {
         foreach(self::$services as $service) {
-            foreach($service['domains'] as $domain) {
-                if(strpos($this->getUrl(), $domain) !== false) {
-                    $this->service = new $service['service']();
-                    return;
-                }
+            if($service::testUrl($this->getUrl())) {
+                return $service;
             }
         }
 
-        throw new Exception('Could not retrieve provider information for this URL.', 500);
+        throw new Exception('Could not retrieve provider information for this URL.', 500);        
     }
 
 }

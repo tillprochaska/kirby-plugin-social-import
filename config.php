@@ -4,11 +4,7 @@ namespace TillProchaska\SocialImport;
 $plugin = 'tillprochaska/social-import';
 
 Importable::$services = [
-    [
-        'name'    => 'youtube',
-        'domains' => ['youtube.com', 'youtu.be'],
-        'service' => 'TillProchaska\SocialImport\Services\YoutubeService',
-    ],
+    'TillProchaska\SocialImport\Services\YoutubeService',
 ];
 
 $baseUrl = '/plugin/' . $plugin;
