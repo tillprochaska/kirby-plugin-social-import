@@ -126,6 +126,12 @@ class Importable {
 
     protected function detectService() {
         foreach(self::$services as $service) {
+            // make sure to use only supported services
+            $interface = __NAMESPACE__ . '\IService';
+            if(!in_array($interface, class_implements($service))) {
+                continue;
+            }
+
             if($service::testUrl($this->getUrl())) {
                 return $service;
             }
