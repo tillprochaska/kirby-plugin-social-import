@@ -49,7 +49,7 @@ foreach($languages as $language) {
     'routes' => $api->routes(),
 
     'sections' => [
-        'SocialUrlImport' => [],
+        'socialImportSingle' => [],
     ],
 
 ]);

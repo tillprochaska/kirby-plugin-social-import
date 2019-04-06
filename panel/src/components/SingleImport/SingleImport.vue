@@ -34,8 +34,8 @@
 </style>
 
 <script>
-    import Preview from './Preview/Preview.vue';
-    import ReviewDialog from './ReviewDialog/ReviewDialog.vue';
+    import Preview from '../Preview/Preview.vue';
+    import ReviewDialog from '../ReviewDialog/ReviewDialog.vue';
 
     export default {
 
