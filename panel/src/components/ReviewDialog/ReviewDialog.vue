@@ -97,10 +97,10 @@
                     return;
                 }
 
-                this.$emit('success');
                 this.$refs.dialog.close();
-                this.$store.dispatch("notification/success", this.$t('page.created'));
                 this.$router.push(route);
+                this.$store.dispatch('notification/success', this.$t('import.success'));
+                this.$emit('success');
             },
 
             cancel() {

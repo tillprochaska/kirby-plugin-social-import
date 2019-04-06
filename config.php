@@ -25,21 +25,26 @@ $api->post(
     '\TillProchaska\SocialImport\Controller::createPage'
 );
 
+$languages = ['en'];
+$translations = [];
+
+foreach($languages as $language) {
+    $file = __DIR__ . '/translations/' . $language . '.json';
+    $data = json_decode(file_get_contents($file), true);
+    $translations[$language] = $data;
+}
+
 \Kirby::plugin($plugin, [
     
     'options' => [
         'prefix' => 'socialImport',
-        'parent' => function($service, $url) {
-            return site();
-        },
-        'template' => function($service, $url) {
-            return 'default';
-        },
-        'transformer' => function($service, $url, $data) {
-            return $data;
-        },
+        'parent' => function($service, $url) { return site(); },
+        'template' => function($service, $url) { return 'default'; },
+        'transformer' => function($service, $url, $data) { return $data; },
         'services.youtube.key' => null,
     ],
+
+    'translations' => $translations,
 
     'routes' => $api->routes(),
 
