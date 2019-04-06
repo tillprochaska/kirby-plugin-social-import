@@ -40,7 +40,6 @@ class YoutubeService implements IService {
 
         return [
             'title' => $data['title'],
-            'author' => $data['channel'],
             'description' => $data['description'],
             'meta' => 'Video uploaded by “' . $data['channel'] . '” on ' . $date->format('Y-m-d'),
             'image' => $data['thumbnail'],
