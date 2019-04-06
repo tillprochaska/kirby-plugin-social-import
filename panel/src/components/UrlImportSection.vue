@@ -14,14 +14,14 @@
         <Preview
             class="result"
             v-bind="{ url }"
-            @cancel="clear()"
-            @review="review()"
+            @cancel="reset"
+            @review="review"
         />
 
         <ReviewDialog
             ref="dialog"
             v-bind="{ url }"
-            @success="clear()"
+            @success="success"
         />
     </k-field>
 </template>
@@ -58,10 +58,18 @@
 
         methods: {
 
-            clear() {
+            reset() {
+                // reset input field and preview
                 this.url = null;
                 this.preview = null;
                 this.$refs.input.focus();
+            },
+
+            success(data) {
+                console.log(data)
+                // redirect to the newly created page
+                let route = this.$api.pages.link(data.pageId);
+                this.$router.push(route);
             },
 
             review() {

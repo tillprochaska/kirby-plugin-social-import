@@ -9,13 +9,13 @@
 
             :fields="fields"
             v-model="data.form.data"
-            @submit="submit()"
+            @submit="submit"
         />
         <ReviewDialogActions
             slot="footer"
             :status="data ? data.form.status : {}"
-            @cancel="cancel()"
-            @submit="submit()"
+            @cancel="cancel"
+            @submit="submit"
         />
     </k-dialog>
 </template>
@@ -78,6 +78,9 @@
             async open() {
                 this.$refs.dialog.open();
 
+                // if the url hasn’t changed since the last time
+                // the modal has been opened, do not fetch the
+                // data again and keep the current data.
                 if(this.data && this.url === this.data.url) {
                     return;
                 }
@@ -91,16 +94,16 @@
 
                 try {
                     response = await Api.createPage(this.url, this.data.form.data);
-                    route = this.$api.pages.link(response.pageData.id);
                 } catch(error) {
                     this.$refs.dialog.error(error.message);
                     return;
                 }
 
                 this.$refs.dialog.close();
-                this.$router.push(route);
                 this.$store.dispatch('notification/success', this.$t('import.success'));
-                this.$emit('success');
+                this.$emit('success', {
+                    pageId: response.pageData.id,
+                });
             },
 
             cancel() {
