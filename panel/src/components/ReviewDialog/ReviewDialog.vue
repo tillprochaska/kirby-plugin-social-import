@@ -11,6 +11,12 @@
             v-model="data.form.data"
             @submit="submit"
         />
+        <div
+            v-else
+            class="loading"
+        >
+            <LoadingIndicator />
+        </div>
         <ReviewDialogActions
             slot="footer"
             :status="data ? data.form.status : {}"
@@ -20,16 +26,25 @@
     </k-dialog>
 </template>
 
+<style>
+    .loading {
+        padding: 5rem 0;
+    }
+</style>
+
 <script>
     import Api from '../../lib/Api.js';
     import slug from '../../helpers/slug.js';
 
     import ReviewDialogActions from './ReviewDialogActions.vue';
+    import LoadingIndicator from '../LoadingIndicator/LoadingIndicator.vue';
+
 
     export default {
 
         components: {
             ReviewDialogActions,
+            LoadingIndicator,
         },
 
         props: {
