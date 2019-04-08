@@ -20,17 +20,39 @@ class Importable {
     protected $page;
 
     protected $url;
-    protected $template;
-    protected $parent;
+    protected $serviceName;
     protected $transformer;
 
-    public function __construct(string $url, callable $template, callable $parent, callable $transformer) {
+    public function __construct(string $url, string $serviceName, callable $transformer) {
         $this->url = $url;
-        $this->template = $template;
-        $this->parent = $parent;
+        $this->serviceName = $serviceName;
         $this->transformer = $transformer;
 
+        if(!isset(self::$services[$serviceName])) {
+            throw new Exception('Invalid serivce: ' . $serviceName);
+        }
+
         $this->initializeService();
+    }
+
+    public static function factory(array $options): Importable {
+        if(!isset($options['url']) || !is_string($options['url'])) {
+            throw new Exception('`url` should be a string.');
+        }
+
+        if(!isset($options['transformer']) || !is_callable($options['transformer'])) {
+            throw new Exception('`transformer` should be a callable.');
+        }
+
+        if(!isset($options['serviceName'])) {
+            $options['serviceName'] = self::detectService($options['url']);
+        }
+
+        return new self(
+            $options['url'],
+            $options['serviceName'],
+            $options['transformer']
+        );
     }
 
     /**
@@ -110,22 +132,16 @@ class Importable {
      * Returns the target parent page using the parent hook.
      */
     public function getParent(): Page {
-        $parent = $this->parent;
-        return $parent(
-            $this->getServiceName(),
-            $this->getUrl()
-        );
+        $data = $this->getData();
+        return $data['parent'];
     }
 
     /**
      * Returns the target page tempalte using the template hook.
      */
     public function getTemplate(): string {
-        $template = $this->template;
-        return $template(
-            $this->getServiceName(),
-            $this->getUrl()
-        );
+        $data = $this->getData();
+        return $data['template'];
     }
 
     /**
@@ -263,7 +279,8 @@ class Importable {
      * to fetch data for the given URL.
      */
     protected function initializeService() {
-        $service = $this->detectService();
+        $serviceName = $this->serviceName;
+        $service = self::$services[$serviceName];
         $this->service = new $service();
     }
 
@@ -271,19 +288,19 @@ class Importable {
      * Tries to detect a service that can be used to fetch
      * data for the given URL.
      */
-    protected function detectService(): string {
-        foreach(self::$services as $service) {
+    public static function detectService(string $url): string {
+        foreach(self::$services as $serviceName => $class) {
             $interface = __NAMESPACE__ . '\IService';
-            if(!in_array($interface, class_implements($service))) {
+            if(!in_array($interface, class_implements($class))) {
                 throw new Exception('Service need to implement the `IService` interface.');
             }
 
-            if($service::testUrl($this->getUrl())) {
-                return $service;
+            if($class::testUrl($url)) {
+                return $serviceName;
             }
         }
 
-        throw new Exception('Could not retrieve provider information for this URL.', 500);        
+        throw new Exception('Could not detect service for this URL.', 500);        
     }
 
 }

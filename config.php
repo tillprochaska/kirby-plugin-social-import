@@ -4,7 +4,7 @@ namespace TillProchaska\SocialImport;
 $plugin = 'tillprochaska/social-import';
 
 Importable::$services = [
-    'TillProchaska\SocialImport\Services\YoutubeService',
+    'youtube' => 'TillProchaska\SocialImport\Services\YoutubeService',
 ];
 
 $baseUrl = '/plugin/' . $plugin;
@@ -43,6 +43,8 @@ foreach($languages as $language) {
         'template' => function($service, $url) { return 'default'; },
         'transformer' => function($service, $url, $data) {
             return [
+                'parent' => site(),
+                'template' => 'default',
                 'content' => $data,
                 'files' => [],
             ];

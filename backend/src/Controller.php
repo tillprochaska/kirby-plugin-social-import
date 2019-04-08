@@ -61,20 +61,12 @@ class Controller {
     }
 
     protected static function getImportable(string $url) {
-        return new Importable(
-            $url,
-            self::getTemplate(),
-            self::getParent(),
-            self::getTransformer()
-        );
+        return Importable::factory([
+            'url' => $url,
+            'transformer' => self::getTransformer(),
+        ]);
     }
 
-    protected static function getTemplate() {
-        return kirby()->option('tillprochaska.social-import.template');
-    }
-
-    protected static function getParent() {
-        return kirby()->option('tillprochaska.social-import.parent');
     }
 
     protected static function getTransformer() {
