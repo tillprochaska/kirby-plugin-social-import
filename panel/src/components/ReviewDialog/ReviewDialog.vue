@@ -117,7 +117,7 @@
                 this.$refs.dialog.close();
                 this.$store.dispatch('notification/success', this.$t('import.success'));
                 this.$emit('success', {
-                    pageId: response.pageData.id,
+                    pageId: response.pageId,
                 });
             },
 

@@ -6,82 +6,144 @@ use \Exception;
 use \Kirby\Toolkit\Str;
 use \Kirby\Cms\Page;
 use \Kirby\Cms\PageBlueprint;
+use \Kirby\Cms\File;
+use \Kirby\Cms\Files;
+use \Kirby\Http\Remote;
+use \Kirby\Toolkit\F;
 
 class Importable {
 
     public static $services;
 
     protected $service;
-    protected $url;
     protected $data;
+    protected $page;
 
-    public function __construct(string $url) {
+    protected $url;
+    protected $template;
+    protected $parent;
+    protected $transformer;
+
+    public function __construct(string $url, callable $template, callable $parent, callable $transformer) {
         $this->url = $url;
+        $this->template = $template;
+        $this->parent = $parent;
+        $this->transformer = $transformer;
+
         $this->initializeService();
     }
 
     /**
-     * Getter method for the URL.
+     * Returns the URL.
      */
     public function getUrl(): string {
         return $this->url;
     }
 
     /**
-     * Shortcut to access the service’s name.
+     * Returns the page.
+     */
+    public function getPage(): Page {
+        return $this->page;
+    }
+
+    /**
+     * Returns the name of the detected service.
      */
     public function getServiceName(): string {
         return $this->service->getName();
     }
 
     /**
-     * Shortcut to get the item’s unique id using
-     * the detected service.
+     * Shortcut to get the item’s unique id using the detected
+     * service.
      */
     public function getId(): string {
         return $this->service->getIdFromUrl($this->getUrl());
     }
 
     /**
-     * Shortcut to get the item’s preview data using
-     * the detected service.
+     * Returns the item’s preview data using the detected
+     * service.
      */
     public function getPreview(): array {
         return $this->service->getPreview($this->getUrl());
     }
 
     /**
-     * Shortcut to get the item’s raw data using the
-     * detected service.
+     * Returns the item’s transformed data using the detected service.
      */
     public function getData(): array {
-        return $this->service->getData($this->getUrl());
+        $transformer = $this->transformer;
+        $url = $this->getUrl();
+
+        // memoize data to prevent additional network requests
+        if(!$this->data) {
+            $raw = $this->service->getData($url);
+            $this->data = $transformer(
+                $this->getServiceName(),
+                $this->getUrl(),
+                $raw
+            );
+        }
+
+        return $this->data;
+    }
+
+    /**
+     * Returns the item’s content data using the detected service.
+     */
+    public function getContent(): array {
+        $data = $this->getData();
+        return $data['content'];
+    }
+
+    /**
+     * Returns the item’s files using the detected service.
+     */
+    public function getFiles(): array {
+        $data = $this->getData();
+        return $data['files'];
+    }
+
+    /**
+     * Returns the target parent page using the parent hook.
+     */
+    public function getParent(): Page {
+        $parent = $this->parent;
+        return $parent(
+            $this->getServiceName(),
+            $this->getUrl()
+        );
+    }
+
+    /**
+     * Returns the target page tempalte using the template hook.
+     */
+    public function getTemplate(): string {
+        $template = $this->template;
+        return $template(
+            $this->getServiceName(),
+            $this->getUrl()
+        );
     }
 
     /**
      * Returns a list of fields and field data required
      * to render a review form for the fetched data.
      */
-    public function getForm(callable $template, callable $transformer): array {
-        $serviceName = $this->getServiceName();
-        $url = $this->getUrl();
+    public function getForm(): array {
+        $content = $this->getContent();
 
-        $data = $this->service->getData($url);
-
-        // use the transformer and template hooks to allow the
-        // user to specify which template should be used and
-        // how the data returned should be mapped to the template’s
-        // blueprint fields
-        $data = $transformer($serviceName, $url, $data);
-        $template = $template($serviceName, $url);
-
-        $page = self::constructPage($template, $data);
+        $page = self::constructPage($this->getTemplate(), $content);
         $blueprint = self::constructBlueprint($page);
 
         // keep only fields for which the service returned data
         $fields = array_filter(
             $blueprint->fields(),
-            function($key) use($data) { return isset($data[$key]); },
+            function($key) use($content) {
+                return isset($content[$key]);
+            },
             ARRAY_FILTER_USE_KEY
         );
 
@@ -93,7 +155,7 @@ class Importable {
         }, $fields);
 
         return [
-            'data' => $data,
+            'data' => $content,
             'status' => $blueprint->status(),
             'fields' => $fields,
         ];
@@ -103,17 +165,11 @@ class Importable {
      * Creates a new page for the importable using
      * the given data.
      */
-    public function createPage(callable $template, callable $parent, array $data): array {
-        $serviceName = $this->getServiceName();
-        $url = $this->getUrl();
+    public function createPage(array $content): Page {
+        $parent = $this->getParent();
+        $template = $this->getTemplate();
 
-        // use the template and parent hooks to determine
-        // which template to use for the new page and where
-        // it should be saved
-        $template = $template($serviceName, $url);
-        $parent = $parent($serviceName, $url);
-
-        if(!isset($data['slug'])) {
+        if(!isset($content['slug'])) {
             throw new Exception ('Invalid slug.', 400);
         }
 
@@ -121,29 +177,64 @@ class Importable {
             throw new Exception('Invalid parent page.', 400);
         }
 
-        if(!isset($data['title'])) {
+        if(!isset($content['title'])) {
             throw new Exception('Missing field: title.', 400);
         }
 
-        $slug = $data['slug'];
-        unset($data['slug']);
+        $slug = $content['slug'];
+        unset($content['slug']);
 
-        $page = $parent->createChild([
+        $this->page = $parent->createChild([
             'slug' => $slug,
             'template' => $template,
-            'content' => $data,
+            'content' => $content,
         ]);
 
-        return [
-            'title' => $page->title(),
-            'id' => $page->id(),
-        ];
+        return $this->page;
+    }
+
+
+    /**
+     * Downloads the item’s associated files and permanently
+     * stores them in the page’s content directory.
+     */
+    public function createFiles(): Files {
+        if(!$this->page) {
+            throw new Exception('Before creating files a page had to be created using the `createPage` method.');
+        }
+
+        foreach($this->getFiles() as $url) {
+            $temporary = $this::downloadFile($url);
+
+            File::create([
+                'source' => $temporary,
+                'filename' => basename($url),
+                'parent' => $this->page,
+            ]);
+        }
+
+        return $this->page->files();
+    }
+
+    /**
+     * Helper method that downloads a file from a given URL to
+     * the system’s temporary directory.
+     */
+    protected function downloadFile(string $url): string {
+        // creates a temporary file with the contents
+        // of the file at the given URL
+        $temporary = tempnam(sys_get_temp_dir(), 'kirby.tillprochaska.social-import.');
+        $remote = Remote::get($url);
+        $contents = $remote->content();
+        F::write($temporary, $contents);
+
+        return $temporary;
     }
 
     /**
      * Constructs a Kirby `Page` object.
      */
-    protected static function constructPage($template, $data): Page {
+    protected static function constructPage(string $template, array $data): Page {
         if(!isset($data['title'])) {
             throw new Exception('Missing field: title');
         }
@@ -180,12 +271,11 @@ class Importable {
      * Tries to detect a service that can be used to fetch
      * data for the given URL.
      */
-    protected function detectService() {
+    protected function detectService(): string {
         foreach(self::$services as $service) {
-            // make sure to use only supported services
             $interface = __NAMESPACE__ . '\IService';
             if(!in_array($interface, class_implements($service))) {
-                continue;
+                throw new Exception('Service need to implement the `IService` interface.');
             }
 
             if($service::testUrl($this->getUrl())) {

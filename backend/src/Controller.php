@@ -11,7 +11,7 @@ class Controller {
 
     public static function getPreview(Api $api): array {
         $url = self::getParam('url');
-        $importable = new Importable($url);
+        $importable = self::getImportable($url);
 
         return [
             'url'  => $importable->getUrl(),
@@ -21,32 +21,30 @@ class Controller {
     }
 
     public static function getForm(Api $api): array {
-        $template = kirby()->option('tillprochaska.social-import.template');
-        $transformer = kirby()->option('tillprochaska.social-import.transformer');
-
         $url = self::getParam('url');
-        $importable = new Importable($url);
+        $importable = self::getImportable($url);
 
         return [
             'url'  => $importable->getUrl(),
             'id'   => $importable->getId(),
-            'form' => $importable->getForm($template, $transformer),
+            'form' => $importable->getForm(),
         ];
     }
 
     public static function createPage(Api $api): array {
         $url = self::getParam('url');
-        $importable = new Importable($url);
-        $request = new Request();
+        $importable = self::getImportable($url);
 
-        $template = kirby()->option('tillprochaska.social-import.template');
-        $parent = kirby()->option('tillprochaska.social-import.parent');
+        $request = new Request();
         $data = $request->body()->toArray();
+
+        $importable->createPage($data);
+        $importable->createFiles();
 
         return [
             'url'  => $importable->getUrl(),
             'id'   => $importable->getId(),
-            'pageData' => $importable->createPage($template, $parent, $data),
+            'pageId' => $importable->getPage()->id(),
         ];
     }
 
@@ -60,6 +58,27 @@ class Controller {
         }
 
         return null;
+    }
+
+    protected static function getImportable(string $url) {
+        return new Importable(
+            $url,
+            self::getTemplate(),
+            self::getParent(),
+            self::getTransformer()
+        );
+    }
+
+    protected static function getTemplate() {
+        return kirby()->option('tillprochaska.social-import.template');
+    }
+
+    protected static function getParent() {
+        return kirby()->option('tillprochaska.social-import.parent');
+    }
+
+    protected static function getTransformer() {
+        return kirby()->option('tillprochaska.social-import.transformer');
     }
 
 }

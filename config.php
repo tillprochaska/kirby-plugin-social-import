@@ -40,7 +40,12 @@ foreach($languages as $language) {
         'prefix' => 'socialImport',
         'parent' => function($service, $url) { return site(); },
         'template' => function($service, $url) { return 'default'; },
-        'transformer' => function($service, $url, $data) { return $data; },
+        'transformer' => function($service, $url, $data) {
+            return [
+                'content' => $data,
+                'files' => [],
+            ];
+        },
         'services.youtube.key' => null,
     ],
 
