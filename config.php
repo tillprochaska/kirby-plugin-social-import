@@ -37,6 +37,7 @@ foreach($languages as $language) {
 \Kirby::plugin($plugin, [
     
     'options' => [
+        'storage' => '/plugins/tillprochaska/social-import/',
         'prefix' => 'socialImport',
         'parent' => function($service, $url) { return site(); },
         'template' => function($service, $url) { return 'default'; },

@@ -1,15 +1,38 @@
 <template>
-    <k-field
-        :label="label"
-        :help="!url ? help : null"
-    >
-        <k-input
-            type="url"
-            theme="field"
-            ref="input"
-            v-bind="{ placeholder }"
-            v-model="url"
-        />
+    <section class="k-section">
+
+        <header class="k-section-header">
+          <k-headline>
+            {{ label }}
+          </k-headline>
+
+          <k-button-group>
+            <k-button
+                icon="import"
+                link="/plugins/socialImportBatch"
+            >
+                Batch Import
+            </k-button>
+          </k-button-group>
+        </header>
+
+        <div class="k-field">
+            <k-input
+                type="url"
+                theme="field"
+                ref="input"
+                v-bind="{ placeholder }"
+                v-model="url"
+            />
+
+            <k-text
+                theme="help"
+                class="k-field-help"
+                v-if="!url"
+            >
+                {{ help }}
+            </k-text>
+        </div>
 
         <Preview
             class="result"
@@ -23,7 +46,8 @@
             v-bind="{ url }"
             @success="success"
         />
-    </k-field>
+
+    </section>
 </template>
 
 
