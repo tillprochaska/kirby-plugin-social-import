@@ -78,6 +78,7 @@ class YoutubeService implements IService {
 
         return [
             'id' => $item->id,
+            'url' => 'https://youtu.be/' . $item->id,
             'title' => $item->snippet->title,
             'datePublished' => $item->snippet->publishedAt,
             'channel' => $item->snippet->channelTitle,

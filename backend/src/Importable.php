@@ -104,7 +104,6 @@ class Importable {
             $raw = $this->service->getData($url);
             $this->data = $transformer(
                 $this->getServiceName(),
-                $this->getUrl(),
                 $raw
             );
         }

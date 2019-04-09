@@ -39,9 +39,7 @@ foreach($languages as $language) {
     'options' => [
         'storage' => '/plugins/tillprochaska/social-import/',
         'prefix' => 'socialImport',
-        'parent' => function($service, $url) { return site(); },
-        'template' => function($service, $url) { return 'default'; },
-        'transformer' => function($service, $url, $data) {
+        'transformer' => function($service, $data) {
             return [
                 'parent' => site(),
                 'template' => 'default',
