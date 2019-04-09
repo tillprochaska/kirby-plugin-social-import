@@ -10,19 +10,31 @@ interface IService {
     public static function getName(): string;
 
     /**
-     * Tests wether the service can be used with a given
-     * URL. Returns `true` if the service can be used to
-     * fetch data for the URL. Otherwise returns `false`.
+     * Tests wether the service can be used to fetch data
+     * for a given importable URL. Returns `true` if the
+     * service supports the URL. Otherwise returns `false`.
      */
-    public static function testUrl(string $url): bool;
+    public static function testImportableUrl(string $url): bool;
 
     /**
-     * Extracts a unique id for the service for a given
-     * URL. Throws an error if the URL can’t be used with
-     * the service. Used to detect the service for a given
-     * URL as well as to fetch data.
+     * Tests wether the service can be used to fetch
+     * a given feed URL. Returns `true` if the service supports
+     * the URL. Otherwise returns `false`.
      */
-    public function getIdFromUrl(string $url): string;
+    public static function testFeedUrl(string $Url): bool;
+
+    /**
+     * Extracts a unique id for the service for a given importable
+     * URL. Throws an error if the URL can’t be used with the
+     * service.
+     */
+    public static function getImportableIdFromUrl(string $url): string;
+
+    /**
+     * Extracts a unique id for the service for a given feed URL.
+     * Throws an error if the URL can’t be used with the service.
+     */
+    public static function getFeedIdFromUrl(string $url): string;
 
     /**
      * Returns data to be used in the Kirby Panel to preview

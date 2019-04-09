@@ -14,7 +14,7 @@ class Controller {
         $importable = self::getImportable($url);
 
         return [
-            'url'  => $importable->getUrl(),
+            'url'  => $url,
             'id'   => $importable->getId(),
             'preview' => $importable->getPreview(),
         ];
@@ -25,7 +25,7 @@ class Controller {
         $importable = self::getImportable($url);
 
         return [
-            'url'  => $importable->getUrl(),
+            'url'  => $url,
             'id'   => $importable->getId(),
             'form' => $importable->getForm(),
         ];
@@ -42,7 +42,7 @@ class Controller {
         $importable->createFiles();
 
         return [
-            'url'  => $importable->getUrl(),
+            'url'  => $url,
             'id'   => $importable->getId(),
             'pageId' => $importable->getPage()->id(),
         ];

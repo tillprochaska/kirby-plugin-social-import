@@ -36,8 +36,8 @@ class YoutubeService implements IService {
         return $match[1];
     }
 
-    public function getPreview(string $url): array {
-        $data = $this->getData($url);
+    public function getPreview(string $id): array {
+        $data = $this->getData($id);
         $date = new \DateTime($data['datePublished']);
 
         return [
@@ -48,10 +48,10 @@ class YoutubeService implements IService {
         ];
     }
 
-    public function getData(string $url): array {
+    public function getData(string $id): array {
         $params = [
             'key'  => $this->apiKey,
-            'id'   => $this->getIdFromUrl($url),
+            'id'   => $id,
             'part' => 'snippet,status',
         ];
 

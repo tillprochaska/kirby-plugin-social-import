@@ -19,12 +19,11 @@ class Importable {
     protected $data;
     protected $page;
 
-    protected $url;
     protected $serviceName;
     protected $transformer;
 
-    public function __construct(string $url, string $serviceName, callable $transformer) {
-        $this->url = $url;
+    public function __construct(string $serviceName, string $id, callable $transformer) {
+        $this->id = $id;
         $this->serviceName = $serviceName;
         $this->transformer = $transformer;
 
@@ -36,30 +35,40 @@ class Importable {
     }
 
     public static function factory(array $options): Importable {
-        if(!isset($options['url']) || !is_string($options['url'])) {
-            throw new Exception('`url` should be a string.');
-        }
-
         if(!isset($options['transformer']) || !is_callable($options['transformer'])) {
             throw new Exception('`transformer` should be a callable.');
+        }
+
+        if(!isset($options['serviceName']) && !isset($options['url'])) {
+            throw new Exception('You either need to provide a URL or a service name.');
+        }
+
+        if(!isset($options['id']) && !isset($options['url'])) {
+            throw new Exception('You either need to provide a URL or an id.');
         }
 
         if(!isset($options['serviceName'])) {
             $options['serviceName'] = self::detectService($options['url']);
         }
 
+        if(!isset($options['id'])) {
+            $service = self::$services[$options['serviceName']];
+            $options['id'] = $service::getImportableIdFromUrl($options['url']);
+        }
+
         return new self(
-            $options['url'],
             $options['serviceName'],
+            $options['id'],
             $options['transformer']
         );
     }
 
     /**
-     * Returns the URL.
+     * Shortcut to get the item’s unique id using the detected
+     * service.
      */
-    public function getUrl(): string {
-        return $this->url;
+    public function getId(): string {
+        return $this->id;
     }
 
     /**
@@ -77,19 +86,11 @@ class Importable {
     }
 
     /**
-     * Shortcut to get the item’s unique id using the detected
-     * service.
-     */
-    public function getId(): string {
-        return $this->service->getIdFromUrl($this->getUrl());
-    }
-
-    /**
      * Returns the item’s preview data using the detected
      * service.
      */
     public function getPreview(): array {
-        return $this->service->getPreview($this->getUrl());
+        return $this->service->getPreview($this->id);
     }
 
     /**
@@ -97,11 +98,10 @@ class Importable {
      */
     protected function getData(): array {
         $transformer = $this->transformer;
-        $url = $this->getUrl();
 
         // memoize data to prevent additional network requests
         if(!$this->data) {
-            $raw = $this->service->getData($url);
+            $raw = $this->service->getData($this->id);
             $this->data = $transformer(
                 $this->getServiceName(),
                 $raw
@@ -294,7 +294,7 @@ class Importable {
                 throw new Exception('Service need to implement the `IService` interface.');
             }
 
-            if($class::testUrl($url)) {
+            if($class::testImportableUrl($url)) {
                 return $serviceName;
             }
         }
