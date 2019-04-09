@@ -9,7 +9,9 @@ use \TillProchaska\SocialImport\IService;
 class YoutubeService implements IService {
 
     protected static $baseUrl = 'https://www.googleapis.com/youtube/v3/videos';
-    protected static $urlPattern = '/(?:youtube\.com\/watch\?.*v=|youtu\.be\/)([a-zA-Z0-9-_]+)/';
+    protected static $importablePattern = '/(?:youtube\.com\/watch\?.*v=|youtu\.be\/)([a-zA-Z0-9-_]+)/';
+    protected static $feedPattern = '//';
+
     protected $apiKey;
 
     public function __construct() {
@@ -24,16 +26,26 @@ class YoutubeService implements IService {
         return 'youtube';
     }
 
-    public static function testUrl(string $url): bool {
-        return !!preg_match(self::$urlPattern, $url);
+    public static function testImportableUrl(string $url): bool {
+        return !!preg_match(self::$importablePattern, $url);
     }
 
-    public function getIdFromUrl(string $url): string {
-        if(!preg_match(self::$urlPattern, $url, $match)) {
+    public static function getImportableIdFromUrl(string $url): string {
+        if(!preg_match(self::$importablePattern, $url, $match)) {
             throw new Exception('Could not extract video ID from the given URL.');
         }
 
         return $match[1];
+    }
+
+    public static function testFeedUrl(string $url): bool {
+        return !!preg_match(self::$feedPattern, $url);
+    }
+
+    public static function getFeedIdFromUrl(string $url): string {
+        if(!preg_match(self::$feedPattern, $url, $match)) {
+            throw new Exception('Could not extract channel ID from the given URL.');
+        }
     }
 
     public function getPreview(string $id): array {
