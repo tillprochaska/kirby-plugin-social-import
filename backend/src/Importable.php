@@ -95,7 +95,7 @@ class Importable {
     /**
      * Returns the item’s transformed data using the detected service.
      */
-    public function getData(): array {
+    protected function getData(): array {
         $transformer = $this->transformer;
         $url = $this->getUrl();
 
@@ -115,7 +115,7 @@ class Importable {
     /**
      * Returns the item’s content data using the detected service.
      */
-    public function getContent(): array {
+    protected function getContent(): array {
         $data = $this->getData();
         return $data['content'];
     }
@@ -123,7 +123,7 @@ class Importable {
     /**
      * Returns the item’s files using the detected service.
      */
-    public function getFiles(): array {
+    protected function getFiles(): array {
         $data = $this->getData();
         return $data['files'];
     }
@@ -131,7 +131,7 @@ class Importable {
     /**
      * Returns the target parent page using the parent hook.
      */
-    public function getParent(): Page {
+    protected function getParent(): Page {
         $data = $this->getData();
         return $data['parent'];
     }
@@ -139,7 +139,7 @@ class Importable {
     /**
      * Returns the target page tempalte using the template hook.
      */
-    public function getTemplate(): string {
+    protected function getTemplate(): string {
         $data = $this->getData();
         return $data['template'];
     }
