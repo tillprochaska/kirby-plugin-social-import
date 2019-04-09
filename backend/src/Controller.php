@@ -9,7 +9,7 @@ use \TillProchaska\ApiHelpers\Api;
 
 class Controller {
 
-    public static function getPreview(Api $api): array {
+    public static function getImportablePreview(Api $api): array {
         $url = self::getParam('url');
         $importable = self::getImportable($url);
 
@@ -20,7 +20,7 @@ class Controller {
         ];
     }
 
-    public static function getForm(Api $api): array {
+    public static function getImportableForm(Api $api): array {
         $url = self::getParam('url');
         $importable = self::getImportable($url);
 
@@ -31,7 +31,7 @@ class Controller {
         ];
     }
 
-    public static function createPage(Api $api): array {
+    public static function createImportablePage(Api $api): array {
         $url = self::getParam('url');
         $importable = self::getImportable($url);
 

@@ -78,7 +78,7 @@
                 this.isLoading = true;
 
                 try {
-                    this.data = await Api.getPreview(url);
+                    this.data = await Api.getImportablePreview(url);
                 } catch(error) {
                     this.error = error;
                 }

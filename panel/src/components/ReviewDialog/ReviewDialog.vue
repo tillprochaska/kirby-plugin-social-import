@@ -108,7 +108,7 @@
                 let route;
 
                 try {
-                    response = await Api.createPage(this.url, this.data.form.data);
+                    response = await Api.createImportablePage(this.url, this.data.form.data);
                 } catch(error) {
                     this.$refs.dialog.error(error.message);
                     return;
@@ -131,7 +131,7 @@
                 this.data = null;
 
                 try {
-                    this.data = await Api.getForm(this.url);
+                    this.data = await Api.getImportableForm(this.url);
                 } catch(error) {
                     this.$refs.dialog.error(error.message);
                 }

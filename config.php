@@ -11,18 +11,18 @@ $baseUrl = '/plugin/' . $plugin;
 $api = new \TillProchaska\ApiHelpers\Api($baseUrl);
 
 $api->get(
-    'previews',
-    '\TillProchaska\SocialImport\Controller::getPreview'
+    '/importables/previews',
+    '\TillProchaska\SocialImport\Controller::getImportablePreview'
 );
 
 $api->get(
-    'forms',
-    '\TillProchaska\SocialImport\Controller::getForm'
+    '/importables/forms',
+    '\TillProchaska\SocialImport\Controller::getImportableForm'
 );
 
 $api->post(
-    'pages',
-    '\TillProchaska\SocialImport\Controller::createPage'
+    '/importables/pages',
+    '\TillProchaska\SocialImport\Controller::createImportablePage'
 );
 
 $languages = ['en'];

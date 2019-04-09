@@ -2,16 +2,16 @@ const BASE_URL = '/plugin/tillprochaska/social-import';
 
 export default class { 
 
-    static async getPreview(url) {
-        return this.get('previews', { url });
+    static async getImportablePreview(url) {
+        return this.get('importables/previews', { url });
     }
 
-    static async getForm(url) {
-        return this.get('forms', { url });
+    static async getImportableForm(url) {
+        return this.get('importables/forms', { url });
     }
 
-    static async createPage(url, data) {
-        return this.post('pages', { url }, data);
+    static async createImportablePage(url, data) {
+        return this.post('importables/pages', { url }, data);
     }
 
     static async get(route, params = {}) {
